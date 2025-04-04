@@ -20,14 +20,15 @@ app = Flask(__name__)
 def divide():
     try:
         a = int(request.args.get('a', 10))
-        b = int(request.args.get('b', 0))  # Intentional bug: default to 0
+        b = int(request.args.get('b', 0))  # Default was 0 which caused division by zero
+        if b == 0:
+            b = 1  # Prevent division by zero
         result = a / b
         return jsonify({"result": result})
     except Exception as e:
         error_msg = f'{{"error": "{str(e)}", "route": "/api/divide", "params": {json.dumps(request.args.to_dict())}}}'
         logger.error(error_msg)
         return jsonify({"error": str(e)}), 500
-
 @app.route('/')
 def home():
     return jsonify({
